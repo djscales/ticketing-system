@@ -1,0 +1,387 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Mercy Diagnostics - Ticketing System</title>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.15/css/dataTables.semanticui.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='select.semanticui.min.css') }}">
+</head>
+
+<body>
+  <div class="ui basic modal" id="connectionErrorModal">
+    <div class="ui icon header">
+      <i class="warning icon"></i> There is a connection issue. Attempting to reconnect...
+      <div class="content">
+        <div class="ui one column stackable grid container">
+          <div class="column">
+          </div>
+          <div class="column">
+            <div class="ui big active centered inline loader"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ui small modal" id="modal-new-ticket">
+    <div class="header">
+      Create a new ticket
+    </div>
+    <div class="content">
+      <form class="ui form" id="form-new-ticket">
+        <div class="required field">
+          <label>Summary</label>
+          <input type="text" name="fnt-summary">
+        </div>
+        <div class="required field">
+          <label>Description</label>
+          <textarea name="fnt-text" rows="5"></textarea>
+        </div>
+        <div class="field">
+          <label>Assignee</label>
+          <div class="ui selection dropdown" tabindex="0" id="fnt-assignee">
+            <input type="hidden" name="fnt-assignee">
+            <i class="dropdown icon"></i>
+            <div class="default text">Unassigned</div>
+            <div class="menu" tabindex="-1">
+              <div class="item" data-value="1">David Scales</div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Observers</label>
+          <div class="ui multiple search selection dropdown" tabindex="0" id="fnt-observers">
+            <input type="hidden" name="fnt-observers">
+            <i class="dropdown icon"></i>
+            <div class="default text">None</div>
+            <div class="menu" tabindex="-1">
+              <div class="item" data-value="1">David Scales</div>
+              <div class="item" data-value="2">Felisha Sandifer</div>
+              <div class="item" data-value="3">Corey Stilton</div>
+              <div class="item" data-value="4">Damien Stone</div>
+              <div class="item" data-value="5">Burt Marshall</div>
+            </div>
+          </div>
+        </div>
+        <div class="required field">
+          <label>Priority</label>
+          <div class="ui dropdown selection" tabindex="0" id="fnt-priority">
+            <select name="fnt-priority">
+              <option value="L">
+                Low
+              </option>
+              <option value="M">
+                Medium
+              </option>
+              <option value="H">
+                High
+              </option>
+            </select><i class="dropdown icon"></i>
+            <div class="text"></div>
+            <div class="menu transition hidden" tabindex="-1">
+              <div class="item" data-value="L">
+                <div class="ui yellow empty circular label"></div>
+                Low
+              </div>
+              <div class="item" data-value="M">
+                <div class="ui orange empty circular label"></div>
+                Medium
+              </div>
+              <div class="item" data-value="H">
+                <div class="ui red empty circular label"></div>
+                High
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ui error message">
+          <p>Please complete all required fields.</p>
+        </div>
+      </form>
+    </div>
+    <div class="actions" id="form-new-ticket-buttons">
+      <button class="ui cancel button" tabindex="-1">Cancel</button>
+      <button class="ui primary button" type="submit" form="form-new-ticket">Save</button>
+    </div>
+  </div>
+  <div class="ui small modal" id="modal-feedback">
+    <div class="content">
+      <form class="ui form" id="form-feedback">
+        <div class="field">
+          <p>Having an issue? Or do you think something should be improved? Whichever it is, let me know below!</p>
+          <textarea rows="5" placeholder="Type your comments here..." name="form-feedback-text"></textarea>
+        </div>
+        <div class="ui error message">
+          <p>Please provide more detail so I can fully understand your issue(s).</p>
+        </div>
+      </form>
+    </div>
+    <div class="actions" id="form-feedback-buttons">
+      <button class="ui cancel button" tabindex="-1">Cancel</button>
+      <button class="ui primary button" type="submit" form="form-feedback">Send</button>
+    </div>
+  </div>
+  <div class="ui small modal" id="modal-settings">
+    <div class="header">
+      Settings
+    </div>
+    <div class="content">
+      <form class="ui form" id="form-settings">
+        <div class="required field">
+          <label>Placeholder Field</label>
+          <input type="text">
+        </div>
+      </form>
+    </div>
+    <div class="actions" id="form-settings-buttons">
+      <button class="ui cancel button" tabindex="-1">Cancel</button>
+      <button class="ui primary button" type="submit" form="form-settings">Save</button>
+    </div>
+  </div>
+  <div class="ui small modal" id="modal-signout">
+    <div class="content">
+      <form class="ui form" id="form-signout" action="{{ url_for('logout') }}" method="post">
+        <p>Are you sure you want to sign out?</p>
+      </form>
+    </div>
+    <div class="actions" id="form-signout-buttons">
+      <button class="ui cancel button">No</button>
+      <button class="ui primary button" type="submit" form="form-signout">Yes</button>
+    </div>
+  </div>
+  <div class="ui basic segment">
+    <div class="ui one column stackable grid container">
+      <div class="column">
+        <div class="ui menu">
+          <div class="borderless item left">
+            Welcome {{ fullName }}!
+          </div>
+          <div class="ui dropdown item right" id="menu-account">
+            My Account
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <div class="settings item">
+                <i class="wrench icon"></i> Settings
+              </div>
+              <div class="feedback item">
+                <i class="comments icon"></i> Send Feedback
+              </div>
+              <div class="ui divider"></div>
+              <div class="signout item">
+                <i class="remove icon"></i> Sign Out
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column" id="global-message">
+        <div class="ui warning message">
+          <i class="close icon"></i>
+          <div class="header">
+            Welcome!
+          </div>
+          <p>Please remember that this ticketing system is still under active development. If you experience any issues please do not hesitate to send me a message. To do so, click on the button in the top right labeled "My Account" and then select "Send Feedback". I will respond to you via email as soon as I am able. Thank you!</p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="ui segments">
+          <div class="ui segment">
+            <div class="ui one column grid">
+              <div class="left aligned three wide column">
+                <div class="ui dropdown selection" tabindex="-1">
+                  <select id="ticket-list-view">
+                    <option value="m">
+                      My Tickets
+                    </option>
+                    <option value="u">
+                      Unassigned Tickets
+                    </option>
+                    <option value="o">
+                      Open Tickets
+                    </option>
+                    <option value="c">
+                      Closed Tickets
+                    </option>
+                    <option value="r">
+                      Recently Updated
+                    </option>
+                    <option value="a">
+                      All Tickets
+                    </option>
+                  </select><i class="dropdown icon"></i>
+                  <div class="text">My Tickets</div>
+                  <div class="menu transition hidden" tabindex="-1">
+                    <div class="item active selected" data-value="m">
+                      My Tickets
+                    </div>
+                    <div class="item" data-value="u">
+                      Unassigned Tickets
+                    </div>
+                    <div class="item" data-value="o">
+                      Open Tickets
+                    </div>
+                    <div class="item" data-value="c">
+                      Closed Tickets
+                    </div>
+                    <div class="item" data-value="r">
+                      Recently Updated
+                    </div>
+                    <div class="item" data-value="a">
+                      All Tickets
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="right aligned thirteen wide column">
+                <button class="ui newticket button">
+                  New Ticket
+                </button>
+                <div class="ui icon input">
+                  <input type="text" placeholder="Search...">
+                  <i class="search icon"></i>
+                </div>
+              </div>
+              <div class="column">
+                <table class="ui small unstackable sortable very compact table" id="ticketlist" width="100%">
+                  <thead>
+                    <tr>
+                      <th class="one wide">#</th>
+                      <th class="eleven wide">Summary</th>
+                      <th class="two wide">Assignee</th>
+                      <th class="one wide center aligned">Priority</th>
+                      <th class="one wide">Created</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="ui segments" id="ticketInformation">
+          <div class="ui segment">
+            <div class="ui one column stackable grid">
+              <div class="ui column">
+                <div class="ui teal ribbon label" data-bind="ticket-id"></div>
+                <div class="ui large header" data-bind="ticket-title"></div>
+                <div class="ui label">
+                  Submitted by
+                  <span data-bind="ticket-creator"></span> on
+                  <span data-bind="ticket-date"></span>
+                </div>
+              </div>
+              <div class="ui column">
+                <pre data-bind="ticket-text" style="font-size: 14px; font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif; margin-top: 0px; margin-bottom: 0px"></pre>
+              </div>
+            </div>
+          </div>
+          <div class="ui basic segment">
+            <h3 class="ui header">Comments</h3>
+            <div class="ui comments" id="ticket-comments">
+              <div class="comment">
+                <div class="content" style="margin-bottom: 1em;">
+                  <div class="ui divider" style="margin-top: 0px"></div>
+                  <span class="author" data-bind="comment-creator"></span>
+                  <span data-bind="comment-internal-flag"></span>
+                  <div class="metadata">
+                    <span class="date" data-bind="comment-date"></span>
+                  </div>
+                  <div class="text">
+                    <pre data-bind="comment-text" style="font-size: 14px; font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif; margin-top: 0px; margin-bottom: 0px"></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ui secondary segment">
+            <div class="ui four column grid">
+              <div class="center aligned column">
+                Priority:
+                <br>
+                <span data-bind="ticket-priority">N/A</span>
+              </div>
+              <div class="center aligned column">
+                Assignee:
+                <br>
+                <div class="ui scrolling dropdown">
+                  <div class="text" data-bind="ticket-assignee">N/A</div>
+                  <i class="dropdown icon"></i>
+                  <div class="menu" id="possible-users">
+                    <div class="item" data-bind="user-full-name">N/A</div>
+                  </div>
+                </div>
+              </div>
+              <div class="center aligned column">
+                Category:
+                <br>
+                <span data-bind="ticket-category">N/A</span>
+              </div>
+              <div class="center aligned column">
+                Last Activity:
+                <br>
+                <span data-bind="ticket-activity">N/A</span>
+              </div>
+            </div>
+          </div>
+          <div class="ui segment" id="ticketview">
+            <div class="ui small secondary pointing menu">
+              <a class="active item" id="tvActivityOpt">Activity</a>
+              <a class="item" id="tvDetailsOpt">Details</a>
+            </div>
+            <div id="tvActivity">
+              <form class="ui form" id="form-ticket-comment" style="margin-bottom: 0em;" enctype="multipart/form-data">
+                <input type="hidden" id="ftc-internal-flag" name="ftc-internal-flag" value="0">
+                <input type="hidden" id="ftc-ticket-id" name="ftc-ticket-id" value="">
+                <div class="ui tiny borderless tabular menu">
+                  <a class="active item" id="ftc-public-comment">
+                    Public Response
+                  </a>
+                  <a class="item" id="ftc-private-comment">
+                    Internal Note
+                  </a>
+                </div>
+                <div class="field">
+                  <textarea id="ftc-comment" name="ftc-comment" rows="5" placeholder="Type a response to all users..."></textarea>
+                </div>
+                <div class="ui error message">
+                  <p>Something went wrong when adding your comment. Please re-submit the form.</p>
+                </div>
+                <button class="ui left button" type="submit" id="ftc-save">Save</button>
+                <div class="ui checkbox">
+                  <input type="checkbox" name="example">
+                  <label>Close Ticket</label>
+                </div>
+                <div class="ui multiple dropdown">
+                  <div class="text">
+                    Attach File(s)
+                  </div>
+                  <div class="menu">
+                    <div class="item">
+                      LOL
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div id="tvDetails">
+              Details here!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.15/js/jquery.dataTables.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.15/js/dataTables.semanticui.min.js" defer></script>
+  <script src="{{ url_for('static', filename='dataTables.select.min.js') }}" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/transparency/0.9.9/transparency.min.js" defer></script>
+  <script src="{{ url_for('static', filename='ui_init.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='ui_events.js') }}" defer></script>
+</body>
+
+</html>

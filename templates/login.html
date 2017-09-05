@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Mercy Diagnostics - Ticketing System Login</title>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/login.css">
+</head>
+
+<body>
+  <div class="ui middle aligned center aligned grid">
+    <div class="column">
+      <form class="ui large form" id="formLogin" action="{{ url_for('login') }}" method="post">
+        <div class="ui segment">
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="user icon"></i>
+              <input type="text" id="loginUsername" name="username" placeholder="Username">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="lock icon"></i>
+              <input type="password" id="loginPassword" name="password" placeholder="Password">
+            </div>
+          </div>
+          <div class="ui large primary submit button">Login</div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.js" defer></script>
+  <script src="{{ url_for('static', filename='login.js') }}" defer></script>
+</body>
+
+</html>
