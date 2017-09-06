@@ -2,7 +2,7 @@
 A simple SPA ticketing system. Everything has been designed to be as simple as possible. Passing JSON back and forth is not something
 I preferred but seemed to mesh with with some of the other APIs I was using.
 
-IntercoolerJS (inspired on Turbolinks) was initially used but created multiple issues during development.
+IntercoolerJS (inspired by Turbolinks) was initially used but created multiple issues during development.
 
 ## Requirements
 - Python 3
