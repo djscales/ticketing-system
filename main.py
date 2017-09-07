@@ -51,15 +51,24 @@ with app.app_context():
 
 @login_manager.user_loader
 def load_user(user_id):
+    """load_user routine necessary for Flask-Login."""
     return models.db.session.query(models.Users).filter(models.Users.id == user_id).first()
 
 @app.route("/", methods=["GET"])
 def index():
+    """Ticketing system index route.
+    HTTP Request Methods: GET
+    Output: HTML"""
+
     return flask.render_template("index.html")
 
 @app.route("/tickets", methods=["GET"])
 @flask_login.login_required
 def tickets():
+    """Ticketing system login route.
+    HTTP Request Methods: GET
+    Output: HTML"""
+
     if DEBUG_FLAG:
         print("Tickets route visited.")
 
@@ -69,6 +78,10 @@ def tickets():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """Ticketing system login route.
+    HTTP Request Methods: GET, POST
+    Output: Redirect"""
+    
     if flask.request.method == "GET":
         return flask.render_template("login.html")
 
@@ -76,6 +89,7 @@ def login():
         inputUsername = flask.request.form["username"]
         inputPassword = flask.request.form["password"]
 
+        # See if there is a username that matches the one given by the user in the login form.
         dbResult = (
             models.db.session.query(
                 models.Users
@@ -99,6 +113,10 @@ def login():
 @app.route("/logout", methods=["POST"])
 @flask_login.login_required
 def logout():
+    """Ticketing system logout route.
+    HTTP Request Methods: POST
+    Output: Redirect"""
+
     if DEBUG_FLAG:
         print("Logout route visited.")
 
@@ -109,11 +127,16 @@ def logout():
 @app.route("/getcomments", methods=["GET"])
 @flask_login.login_required
 def getcomments():
+    """Ticketing system getcomments route.
+    HTTP Request Methods: GET
+    Output: JSON"""
+    
     if DEBUG_FLAG:
         print("Getcomments route visited.")
 
     reqID = flask.request.args["id"]
 
+    # Get all comments from the DB.
     dbComments = (
         models.db.session.query(
             models.Comments
@@ -129,11 +152,16 @@ def getcomments():
 @app.route("/getticket", methods=["GET"])
 @flask_login.login_required
 def getticket():
+    """Ticketing system getticket route.
+    HTTP Request Methods: GET
+    Output: JSON"""
+
     if DEBUG_FLAG:
         print("Getticket route visited.")
 
     reqID = flask.request.args["id"]
 
+    # Retrieve the ticket and all associated information given the request ID.
     dbTicket = models.db.session.query(models.Tickets).filter(models.Tickets.id == reqID).first()
 
     ticketID = dbTicket.id
@@ -162,6 +190,10 @@ def getticket():
 @app.route("/assigntoticket", methods=["POST"])
 @flask_login.login_required
 def assigntoticket():
+    """Ticketing system assigntoticket route.
+    HTTP Request Methods: POST
+    Output: JSON"""
+
     if DEBUG_FLAG:
         print("Assigntoticket route visited.")
 
@@ -197,6 +229,10 @@ def assigntoticket():
 @app.route("/givefeedback", methods=["POST"])
 @flask_login.login_required
 def givefeedback():
+    """Ticketing system givefeedback route.
+    HTTP Request Methods: POST
+    Output: JSON"""
+
     if DEBUG_FLAG:
         print("Feedback route visited.")
 
@@ -219,6 +255,10 @@ def givefeedback():
 @app.route("/settings", methods=["POST"])
 @flask_login.login_required
 def settings():
+    """Ticketing system settings route.
+    HTTP Request Methods: POST
+    Output: Nothing at the moment."""
+
     if DEBUG_FLAG:
         print("Settings route visited.")
 
@@ -227,6 +267,10 @@ def settings():
 @app.route("/ticketlist", methods=["GET"])
 @flask_login.login_required
 def ticketlist():
+    """Ticketing system ticketlist route.
+    HTTP Request Methods: GET
+    Output: JSON"""
+
     if DEBUG_FLAG:
         print("Ticketlist route visited.")
 
@@ -305,6 +349,10 @@ def ticketlist():
 @app.route("/getusers", methods=["GET"])
 @flask_login.login_required
 def getusers():
+    """Ticketing system getusers route.
+    HTTP Request Methods: GET
+    Output: JSON"""
+
     if DEBUG_FLAG:
         print("Getusers route visited.")
 
@@ -324,6 +372,10 @@ def getusers():
 @app.route("/newcomment", methods=["POST"])
 @flask_login.login_required
 def newcomment():
+    """Ticketing system newcomment route.
+    HTTP Request Methods: POST
+    Output: JSON"""
+
     if DEBUG_FLAG:
         print("Newcomment route visited.")
 
@@ -377,6 +429,10 @@ def newcomment():
 @app.route("/newticket", methods=["POST"])
 @flask_login.login_required
 def newticket():
+    """Ticketing system newticket route.
+    HTTP Request Methods: POST
+    Output: JSON"""
+
     if DEBUG_FLAG:
         print("Newticket route visited.")
 

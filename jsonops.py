@@ -4,7 +4,8 @@ def MakeJSONTicketL(dbData):
     """Create a JSON data structure for the ticket list so 
     DataTables can parse it."""
 
-    # If there are no entries in our returned DB data exit out of the function with blank JSON data.
+    # If there are no tickets in the returned database query then return empty JSON data.
+    # CAN BE EASILY REMOVED.
     if dbData.count() == 0:
         return json.dumps({
             "data": [{
@@ -58,7 +59,7 @@ def MakeJSONCommentL(dbData):
     """Create a JSON data structure for all comments associated to a ticket
     so Semantic-UI dropdown can parse it."""
 
-    # If there are no comments in the returned database query then return an empty string.
+    # If there are no comments in the returned database query then return empty JSON data.
     if dbData.count() == 0:
         return json.dumps([{
             "comment-creator": "",

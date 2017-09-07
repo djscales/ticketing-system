@@ -4,6 +4,8 @@ import flask_login
 db = flask_sqlalchemy.SQLAlchemy()
 
 class Users(db.Model, flask_login.UserMixin):
+    """Flask-SQLAlchemy model for all user accounts."""
+
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 
     username = db.Column(db.String(50), unique = True, nullable = False)
@@ -22,6 +24,8 @@ class Users(db.Model, flask_login.UserMixin):
     statusDate = db.Column(db.DateTime, nullable = True)
 
 class Tickets(db.Model):
+    """Flask-SQLAlchemy model for all tickets."""
+
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     
     dateCreated = db.Column(db.DateTime, nullable = False)
@@ -40,6 +44,8 @@ class Tickets(db.Model):
     status = db.Column(db.String(1), nullable = True)
 
 class Comments(db.Model):
+    """Flask-SQLAlchemy model for all comments."""
+
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 
     dateCreated = db.Column(db.DateTime, nullable = True)
@@ -54,6 +60,8 @@ class Comments(db.Model):
     internalFlag = db.Column(db.Boolean(), nullable = False, server_default = "0")
 
 class Files(db.Model):
+    """Flask-SQLAlchemy model for all files attached to comments."""
+
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 
     commentID = db.Column(db.Integer, db.ForeignKey("comments.id"), nullable = False)
@@ -62,6 +70,8 @@ class Files(db.Model):
     data = db.Column(db.LargeBinary, nullable = False)
 
 class Feedback(db.Model):
+    """Flask-SQLAlchemy model for all feedback submissions."""
+
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 
     creatorID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
