@@ -1,6 +1,6 @@
 # A prototype ticketing system
 A simple SPA ticketing system. Everything has been designed to be as simple as possible. Passing JSON back and forth is not something
-I preferred but seemed to mesh with with some of the other APIs I was using.
+I preferred but seemed to mesh well with some of the other APIs I was using.
 
 IntercoolerJS (inspired by Turbolinks) was initially used but created multiple issues during development.
 
@@ -18,7 +18,7 @@ IntercoolerJS (inspired by Turbolinks) was initially used but created multiple i
 ## Front-end Framework
 - Semantic-UI
 
-## Other Javascript Libraries
+## Javascript Libraries
 - jQuery
 - jQuery Form
 - DataTables
@@ -26,7 +26,10 @@ IntercoolerJS (inspired by Turbolinks) was initially used but created multiple i
 - DataTables for Semantic-UI
 - Transparency
 
-## TODO
-1. Finish up the front-end.
-2. Complete an administrator interface.
-3. Many other items.
+## TODO (not necessarily listed in order of importance)
+1. Implement tests.
+2. Finish up the front-end.
+3. Complete an administrator interface.
+4. Make installation much easier.
+5. Create documentation.
+6. Many other items.
